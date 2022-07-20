@@ -14,6 +14,11 @@
   "scripts": {
     "postinstall": "tsc --build",
     "dev": "concurrently \"tsc -w\" \"nodemon dist/web.js\"",
+    "pack:build": "tsc --build && pack build --builder=gcr.io/buildpacks/builder --env 'GOOGLE_RUNTIME_VERSION=14.17.0' sample-node-tsc",
+    "pack:submit": "gcloud builds submit --pack builder=gcr.io/buildpacks/builder,env=GOOGLE_RUNTIME_VERSION=14.17.0,image=gcr.io/seven-staging/seven-gcr-test-2",
+    "pack:deploy": "gcloud run deploy seven-gcr-test-2 --image=gcr.io/seven-staging/seven-gcr-test-2 --region=us-central1 --project=seven-staging && gcloud run services update-traffic seven-gcr-test-2 --to-latest",
+    "deploy": "npm run pack:build && npm run pack:submit && npm run pack:deploy",
+    "run": "docker run -it -p8080:8080 sample-node-tsc",
     "start": "node dist/web.js"
   },
   "engines": {
